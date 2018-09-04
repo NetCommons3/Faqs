@@ -100,7 +100,7 @@ class Faq extends FaqsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'key' => array(
 				'notBlank' => array(
 					'rule' => array('notBlank'),
@@ -131,7 +131,7 @@ class Faq extends FaqsAppModel {
 		if (isset($this->data['FaqSetting'])) {
 			$this->FaqSetting->set($this->data['FaqSetting']);
 			if (! $this->FaqSetting->validates()) {
-				$this->validationErrors = Hash::merge(
+				$this->validationErrors = array_merge(
 					$this->validationErrors, $this->FaqSetting->validationErrors
 				);
 				return false;
@@ -172,9 +172,8 @@ class Faq extends FaqsAppModel {
 				'name' => __d('faqs', 'New FAQ %s', date('YmdHis')),
 			),
 		));
-		$faq = Hash::merge($faq, $this->FaqSetting->createBlockSetting());
 
-		return $faq;
+		return ($faq + $this->FaqSetting->createBlockSetting());
 	}
 
 /**
@@ -183,7 +182,7 @@ class Faq extends FaqsAppModel {
  * @return array
  */
 	public function getFaq() {
-		$faq = $this->find('all', array(
+		$faq = $this->find('first', array(
 			'recursive' => 0,
 			'conditions' => $this->getBlockConditionById(),
 		));
@@ -191,7 +190,8 @@ class Faq extends FaqsAppModel {
 		if (! $faq) {
 			return false;
 		}
-		return Hash::merge($faq[0], $this->FaqSetting->getFaqSetting());
+
+		return ($faq + $this->FaqSetting->getFaqSetting());
 	}
 
 /**

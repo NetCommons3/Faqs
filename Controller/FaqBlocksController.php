@@ -139,7 +139,7 @@ class FaqBlocksController extends FaqsAppController {
 			if (! $faq = $this->Faq->getFaq()) {
 				return $this->throwBadRequest();
 			}
-			$this->request->data = Hash::merge($this->request->data, $faq);
+			$this->request->data += $faq;
 			$this->request->data['Frame'] = Current::read('Frame');
 		}
 	}

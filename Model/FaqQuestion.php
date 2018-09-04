@@ -126,7 +126,9 @@ class FaqQuestion extends FaqsAppModel {
  */
 	public function beforeFind($query) {
 		//$this->idがある場合、登録処理として判断する
-		if (Hash::get($query, 'recursive') > -1 && ! $this->id) {
+		if (isset($query['recursive']) &&
+				$query['recursive'] > -1 &&
+				! $this->id) {
 			$belongsTo = $this->Category->bindModelCategoryLang('FaqQuestion.category_id');
 			$this->bindModel($belongsTo, true);
 		}
@@ -143,7 +145,7 @@ class FaqQuestion extends FaqsAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		$this->validate = Hash::merge($this->validate, array(
+		$this->validate = array_merge($this->validate, array(
 			'faq_key' => array(
 				'notBlank' => array(
 					'rule' => array('notBlank'),
@@ -185,7 +187,7 @@ class FaqQuestion extends FaqsAppModel {
 		if (isset($this->data['FaqQuestionOrder'])) {
 			$this->FaqQuestionOrder->set($this->data['FaqQuestionOrder']);
 			if (! $this->FaqQuestionOrder->validates()) {
-				$this->validationErrors = Hash::merge(
+				$this->validationErrors = array_merge(
 					$this->validationErrors, $this->FaqQuestionOrder->validationErrors
 				);
 				return false;

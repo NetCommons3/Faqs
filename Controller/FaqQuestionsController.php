@@ -119,7 +119,10 @@ class FaqQuestionsController extends FaqsAppController {
  * @return void
  */
 	public function view() {
-		$faqQuestionKey = Hash::get($this->request->params, 'key', null);
+		$faqQuestionKey = null;
+		if (isset($this->request->params['key'])) {
+			$faqQuestionKey = $this->request->params['key'];
+		}
 		$faqQuestion = $this->FaqQuestion->getWorkflowContents('first', array(
 			'recursive' => 0,
 			'conditions' => array(
@@ -156,15 +159,12 @@ class FaqQuestionsController extends FaqsAppController {
 			$this->NetCommons->handleValidationError($this->FaqQuestion->validationErrors);
 
 		} else {
-			//表示処理
-			$this->request->data = Hash::merge($this->request->data,
-				$this->FaqQuestion->create(array(
-					'faq_key' => $this->viewVars['faq']['key'],
-				)),
-				$this->FaqQuestionOrder->create(array(
-					'faq_key' => $this->viewVars['faq']['key'],
-				))
-			);
+			$this->request->data += $this->FaqQuestion->create([
+				'faq_key' => $this->viewVars['faq']['key'],
+			]);
+			$this->request->data += $this->FaqQuestionOrder->create([
+				'faq_key' => $this->viewVars['faq']['key'],
+			]);
 			$this->request->data['Faq'] = $this->viewVars['faq'];
 			$this->request->data['Frame'] = Current::read('Frame');
 			$this->request->data['Block'] = Current::read('Block');
