@@ -189,6 +189,9 @@ class FaqQuestionsController extends FaqsAppController {
 				$this->FaqQuestion->alias . '.key' => $faqQuestionKey
 			)
 		));
+		if (empty($faqQuestion)) {
+			return $this->throwBadRequest();
+		}
 
 		//編集権限チェック
 		if (! $this->FaqQuestion->canEditWorkflowContent($faqQuestion)) {
